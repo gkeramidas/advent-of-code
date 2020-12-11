@@ -24,13 +24,37 @@ def find(numbers, goal):
     return find(rest, goal)
 
 
+def find3(numbers, goal):
+    # For more than two 'dimensions' it's better to generate the
+    # triangular part of the NxNxN cube of all possible numbers, and
+    # just check the triplets.
+    def triplets(numbers):
+        size = len(numbers)
+        for ix in range(size):
+            for iy in range(ix + 1, size):
+                for iz in range(iy + 1, size):
+                    yield numbers[ix], numbers[iy], numbers[iz]
+
+    if len(numbers) <= 2:
+        raise ValueError("Cannot find a match")
+    for x, y, z in triplets(numbers):
+        if x + y + z == goal:
+            return x, y, z
+    raise ValueError("No match found")
+
+
 def main():
     numbers = [int(line) for line in sys.stdin.readlines()]
     try:
         x, y = find(numbers, 2020)
         print("x {} * y {} = {}".format(x, y, x * y))
-    except ValueError:
-        print("Could not find the answer")
+    except ValueError as e:
+        print(e)
+    try:
+        x, y, z = find3(numbers, 2020)
+        print("x {} * y {} * z {} = {}".format(x, y, z, x * y * z))
+    except ValueError as e:
+        print(e)
 
 
 if __name__ == '__main__':
